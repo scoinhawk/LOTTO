@@ -10,7 +10,7 @@ ARAWDATA = []
 BRAWDATA = []
 OFFICIALDATA = {}
 
-while PAGENUMBER <= 83:  # Our way of filtering through pages
+while PAGENUMBER <= 1:  # Our way of filtering through pages
     COUNTER = 0  # We will need this later
     url = urlopen('https://www.usamega.com/mega-millions-history.asp?p={}'.format(PAGENUMBER))
     RAW = url.read()  # Reads data into variable
@@ -37,3 +37,18 @@ while PAGENUMBER <= 83:  # Our way of filtering through pages
 with open('lotto.csv', 'w') as data:
     file = csv.writer(data)
     file.writerows(OFFICIALDATA.items())
+
+def frequency(list):
+    BUFFED = []  # Local list to manipulate
+    for line in list:
+        buffer = line.split()
+        for bbuffer in buffer:
+            BUFFED.append(bbuffer)
+    STORED = Counter(BUFFED)
+
+    with open('occurrence.csv', 'w') as data:
+        file = csv.writer(data)
+        file.writerows(STORED.items())
+
+
+frequency(BRAWDATA)
