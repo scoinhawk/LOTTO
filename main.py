@@ -9,8 +9,12 @@ PAGENUMBER = 1
 ARAWDATA = []
 BRAWDATA = []
 OFFICIALDATA = {}
+NUMBERS = []
+TIMES = []
+CHANCE = []
+zc = 0
 
-while PAGENUMBER <= 1:  # Our way of filtering through pages
+while PAGENUMBER <= 83:  # Our way of filtering through pages
     COUNTER = 0  # We will need this later
     url = urlopen('https://www.usamega.com/mega-millions-history.asp?p={}'.format(PAGENUMBER))
     RAW = url.read()  # Reads data into variable
@@ -38,17 +42,50 @@ with open('lotto.csv', 'w') as data:
     file = csv.writer(data)
     file.writerows(OFFICIALDATA.items())
 
+
 def frequency(list):
+    global zc
     BUFFED = []  # Local list to manipulate
     for line in list:
         buffer = line.split()
         for bbuffer in buffer:
             BUFFED.append(bbuffer)
-    STORED = Counter(BUFFED)
+    STORED = Counter(BUFFED)  # Counts each unique number
+    zc = len(STORED)  # Used to tell us how unique numbers there are
 
     with open('occurrence.csv', 'w') as data:
         file = csv.writer(data)
         file.writerows(STORED.items())
 
 
+def solution():
+    with open('occurrence.csv', 'r') as data:
+        fileReader = csv.reader(data)
+        for row in fileReader:
+            NUMBERS.append(row[0])  # Grabs first row which are numbers
+            TIMES.append(row[1])  # Grabs second row which is the occurrence
+            a = str((int(row[1]) / len(BRAWDATA)))  # Calculates the occurrence divided by total
+            CHANCE.append(a[2:4])  # Possible Chance Strips 00.02345 -> 02 which is in percent
+
+
+REPORT = {  # Dictionary of the list
+    'Numbers': NUMBERS,
+    'Times': TIMES,
+    'Chance': CHANCE,
+}
+
 frequency(BRAWDATA)
+solution()
+
+with open('report.csv', 'w') as data:
+    dataWriter = csv.writer(data)
+    z = 0
+    while z < zc:  # Unique numbers there are
+        dataWriter.writerow([
+            str(REPORT['Numbers'][z]),
+            str(REPORT['Times'][z]),
+            str(REPORT['Chance'][z]),
+        ])
+        z += 1
+
+# print(REPORT['Numbers'][10], REPORT['Times'][10], REPORT['Chance'][10])
